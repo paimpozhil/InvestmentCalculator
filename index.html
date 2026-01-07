@@ -417,6 +417,7 @@
                     </div>
                 </div>
                 <div class="mini-chart-container">
+                    <h3 style="color: #4fc3f7; font-size: 0.9rem; margin-bottom: 10px; text-align: center;">Portfolio Allocation</h3>
                     <canvas id="miniAllocationChart"></canvas>
                 </div>
             </div>
@@ -703,12 +704,6 @@
                 <h2>Visual Analytics</h2>
                 <div class="charts-grid">
                     <div class="chart-container">
-                        <h3>Portfolio Allocation</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="allocationChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-container">
                         <h3>Returns Breakdown</h3>
                         <div class="chart-wrapper">
                             <canvas id="returnsChart"></canvas>
@@ -752,7 +747,7 @@
 
     <script>
         // Chart instances
-        let allocationChart, returnsChart, growthChart, marginChart, miniAllocationChart;
+        let returnsChart, growthChart, marginChart, miniAllocationChart;
 
         function formatCurrency(num) {
             return num.toLocaleString('en-IN', { maximumFractionDigits: 0 });
@@ -898,35 +893,6 @@
                 }
             });
 
-            // Allocation Pie Chart (in Analytics section)
-            const allocationCtx = document.getElementById('allocationChart').getContext('2d');
-            allocationChart = new Chart(allocationCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Nifty/Indices', 'Bonds', 'Cash'],
-                    datasets: [{
-                        data: [50, 40, 10],
-                        backgroundColor: ['#4fc3f7', '#81c784', '#ffb74d'],
-                        borderColor: ['#4fc3f7', '#81c784', '#ffb74d'],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    ...chartOptions,
-                    cutout: '60%',
-                    plugins: {
-                        ...chartOptions.plugins,
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.parsed + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
             // Returns Bar Chart
             const returnsCtx = document.getElementById('returnsChart').getContext('2d');
             returnsChart = new Chart(returnsCtx, {
@@ -1050,10 +1016,6 @@
             // Update Mini Allocation Chart
             miniAllocationChart.data.datasets[0].data = [data.niftyAlloc, data.bondAlloc, data.cashAlloc];
             miniAllocationChart.update();
-
-            // Update Allocation Chart
-            allocationChart.data.datasets[0].data = [data.niftyAlloc, data.bondAlloc, data.cashAlloc];
-            allocationChart.update();
 
             // Update Returns Chart
             returnsChart.data.datasets[0].data = [
@@ -1211,7 +1173,7 @@
             document.getElementById('heroYear5').textContent = formatCurrency(year5Value);
 
             // Update Charts
-            if (allocationChart) {
+            if (miniAllocationChart) {
                 updateCharts({
                     capital,
                     niftyAlloc,
