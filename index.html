@@ -394,7 +394,7 @@
                 <h2>Capital Input</h2>
                 <div class="input-group">
                     <label for="capital">Total Investment Capital (₹)</label>
-                    <input type="number" id="capital" value="1000000" onchange="calculate()">
+                    <input type="number" id="capital" value="1000000" oninput="calculate()">
                     <div class="hint">Enter your total capital to invest</div>
                 </div>
                 <div class="hero-return">
@@ -425,17 +425,17 @@
                 <div class="inline-inputs">
                     <div class="input-group">
                         <label for="niftyAlloc">Nifty/Indices</label>
-                        <input type="number" id="niftyAlloc" value="50" onchange="calculate()">
+                        <input type="number" id="niftyAlloc" value="50" oninput="calculate()">
                     </div>
                     <div class="input-group">
                         <label for="bondAlloc">Bonds</label>
-                        <input type="number" id="bondAlloc" value="40" onchange="calculate()">
+                        <input type="number" id="bondAlloc" value="40" oninput="calculate()">
                     </div>
                 </div>
                 <div class="inline-inputs">
                     <div class="input-group">
                         <label for="cashAlloc">Cash</label>
-                        <input type="number" id="cashAlloc" value="10" onchange="calculate()">
+                        <input type="number" id="cashAlloc" value="10" oninput="calculate()">
                     </div>
                     <div class="input-group">
                         <label>Total Allocation</label>
@@ -477,36 +477,36 @@
                 <div class="inline-inputs">
                     <div class="input-group">
                         <label for="niftyReturn">Nifty CAGR</label>
-                        <input type="number" id="niftyReturn" value="12" step="0.5" onchange="calculate()">
+                        <input type="number" id="niftyReturn" value="12" step="0.5" oninput="calculate()">
                         <div class="hint">Base: 12% | Adjusted by market outlook</div>
                     </div>
                     <div class="input-group">
                         <label for="bondReturn">Bond Return</label>
-                        <input type="number" id="bondReturn" value="6.5" step="0.5" onchange="calculate()">
+                        <input type="number" id="bondReturn" value="6.5" step="0.5" oninput="calculate()">
                         <div class="hint">Govt bonds ~6.5-7%</div>
                     </div>
                 </div>
                 <div class="inline-inputs">
                     <div class="input-group">
                         <label for="tradingReturn">Trading Return on Margin</label>
-                        <input type="number" id="tradingReturn" value="15" step="0.5" onchange="calculate()">
+                        <input type="number" id="tradingReturn" value="15" step="0.5" oninput="calculate()">
                         <div class="hint">Base: 15% | Adjusted by performance</div>
                     </div>
                     <div class="input-group">
                         <label for="profitShare">Expenses for Trading (%)</label>
-                        <input type="number" id="profitShare" value="10" step="1" onchange="calculate()">
+                        <input type="number" id="profitShare" value="10" step="1" oninput="calculate()">
                         <div class="hint">% of trading profits for expenses</div>
                     </div>
                 </div>
                 <div class="inline-inputs">
                     <div class="input-group">
                         <label for="liquidBeesAlloc">Cash in Liquid Funds (%)</label>
-                        <input type="number" id="liquidBeesAlloc" value="70" step="5" onchange="calculate()">
+                        <input type="number" id="liquidBeesAlloc" value="70" step="5" oninput="calculate()">
                         <div class="hint">% of cash invested in Liquid Funds (no haircut, counts as cash)</div>
                     </div>
                     <div class="input-group">
                         <label for="liquidBeesReturn">Liquid Funds Return (%)</label>
-                        <input type="number" id="liquidBeesReturn" value="5" step="0.5" onchange="calculate()">
+                        <input type="number" id="liquidBeesReturn" value="5" step="0.5" oninput="calculate()">
                         <div class="hint">Liquid Fund return ~5% (LiquidBees 1Y: 4.8%, 3Y: 4.9%)</div>
                     </div>
                 </div>
@@ -518,35 +518,35 @@
                 <div class="inline-inputs">
                     <div class="input-group">
                         <label for="niftyHaircut">Nifty Haircut (%)</label>
-                        <input type="number" id="niftyHaircut" value="12.5" onchange="calculate()">
+                        <input type="number" id="niftyHaircut" value="12.5" oninput="calculate()">
                         <div class="hint">Margin received: 87.5%</div>
                     </div>
                     <div class="input-group">
                         <label for="bondHaircut">Bond Haircut (%)</label>
-                        <input type="number" id="bondHaircut" value="10" onchange="calculate()">
+                        <input type="number" id="bondHaircut" value="10" oninput="calculate()">
                         <div class="hint">Margin received: 90%</div>
                     </div>
                 </div>
                 <div class="input-group">
                     <label for="overallMargin">Overall Margin Received (%)</label>
-                    <input type="number" id="overallMargin" value="85" onchange="calculate()">
+                    <input type="number" id="overallMargin" value="85" oninput="calculate()">
                     <div class="hint">Approx margin received from broker on pledged portfolio</div>
                 </div>
                 <div class="inline-inputs">
                     <div class="input-group">
                         <label for="minCashRequired">Min Cash Required (%)</label>
-                        <input type="number" id="minCashRequired" value="50" onchange="calculate()">
+                        <input type="number" id="minCashRequired" value="50" oninput="calculate()">
                         <div class="hint">Broker's cash component requirement</div>
                     </div>
                     <div class="input-group">
                         <label for="brokerInterest">Broker Interest Rate (%)</label>
-                        <input type="number" id="brokerInterest" value="12" step="0.5" onchange="calculate()">
+                        <input type="number" id="brokerInterest" value="12" step="0.5" oninput="calculate()">
                         <div class="hint">Interest on cash shortfall (~12-18%)</div>
                     </div>
                 </div>
                 <div class="input-group">
                     <label for="overnightPct">Overnight Position (%)</label>
-                    <input type="number" id="overnightPct" value="40" step="5" onchange="calculate()">
+                    <input type="number" id="overnightPct" value="40" step="5" oninput="calculate()">
                     <div class="hint">% of margin used for overnight positions (interest applies only to this)</div>
                 </div>
             </div>
@@ -881,7 +881,7 @@
             returnsChart = new Chart(returnsCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Nifty', 'Bonds', 'Cash', 'Trading'],
+                    labels: ['Nifty', 'Bonds', 'Liquid Funds', 'Trading'],
                     datasets: [{
                         label: 'Annual Returns (₹)',
                         data: [60000, 28000, 0, 129750],
@@ -1004,7 +1004,7 @@
             returnsChart.data.datasets[0].data = [
                 data.niftyReturnAmt,
                 data.bondReturnAmt,
-                data.cashReturnAmt,
+                data.liquidBeesReturnAmt,
                 data.tradingReturnAmt
             ];
             returnsChart.update();
@@ -1164,8 +1164,8 @@
                     cashAlloc,
                     niftyReturnAmt,
                     bondReturnAmt,
-                    cashReturnAmt,
-                    tradingReturnAmt,
+                    liquidBeesReturnAmt,
+                    tradingReturnAmt: grossTradingReturn,
                     growthData,
                     marginReceived,
                     cashAmount
