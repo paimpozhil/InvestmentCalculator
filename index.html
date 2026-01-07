@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment & Pledging Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        .subtitle {
+            text-align: center;
+            color: #90a4ae;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .card h2 {
+            color: #4fc3f7;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+            padding-bottom: 10px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #b0bec5;
+            font-size: 0.85rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+        }
+        .input-group .hint {
+            font-size: 0.75rem;
+            color: #78909c;
+            margin-top: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        th {
+            color: #4fc3f7;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        td {
+            font-size: 0.9rem;
+        }
+        .value {
+            color: #81c784;
+            font-weight: 600;
+        }
+        .value.highlight {
+            color: #ffb74d;
+            font-size: 1.1rem;
+        }
+        .percentage {
+            color: #90a4ae;
+            font-size: 0.8rem;
+        }
+        .notes-card {
+            grid-column: 1 / -1;
+        }
+        .notes-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .notes-card li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #b0bec5;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .notes-card li:before {
+            content: "•";
+            color: #4fc3f7;
+            position: absolute;
+            left: 0;
+        }
+        .summary-row {
+            background: rgba(79, 195, 247, 0.1);
+        }
+        .summary-row td {
+            font-weight: 600;
+            color: #4fc3f7;
+        }
+        .warning {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #ffb74d;
+        }
+        .section-divider {
+            border-top: 2px solid rgba(79, 195, 247, 0.3);
+            margin: 15px 0;
+            padding-top: 15px;
+        }
+        .inline-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .total-return {
+            background: linear-gradient(135deg, rgba(129, 199, 132, 0.2) 0%, rgba(79, 195, 247, 0.2) 100%);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .total-return .label {
+            color: #90a4ae;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        .total-return .amount {
+            color: #81c784;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .total-return .percentage {
+            color: #4fc3f7;
+            font-size: 1rem;
+        }
+        .hero-return {
+            background: linear-gradient(135deg, rgba(129, 199, 132, 0.3) 0%, rgba(79, 195, 247, 0.3) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+            border: 2px solid rgba(129, 199, 132, 0.4);
+        }
+        .hero-return .label {
+            color: #b0bec5;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .hero-return .amount {
+            color: #81c784;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(129, 199, 132, 0.5);
+        }
+        .hero-return .cagr {
+            color: #4fc3f7;
+            font-size: 1.2rem;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        .hero-return .sub-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #90a4ae;
+        }
+        .charts-section {
+            grid-column: 1 / -1;
+        }
+        .presets-container {
+            margin-bottom: 15px;
+        }
+        .presets-label {
+            color: #b0bec5;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .preset-btn {
+            padding: 8px 14px;
+            border: 1px solid rgba(79, 195, 247, 0.4);
+            border-radius: 20px;
+            background: rgba(79, 195, 247, 0.1);
+            color: #4fc3f7;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .preset-btn:hover {
+            background: rgba(79, 195, 247, 0.3);
+            border-color: #4fc3f7;
+            transform: translateY(-2px);
+        }
+        .preset-btn.active {
+            background: #4fc3f7;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        .preset-btn {
+            position: relative;
+        }
+        .preset-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 200px;
+            white-space: normal;
+            text-align: center;
+        }
+        .preset-btn:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+        .preset-btn.warning-preset {
+            border-color: rgba(255, 152, 0, 0.5);
+        }
+        .preset-btn.warning-preset:hover {
+            border-color: #ffb74d;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .market-slider-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+        }
+        .market-slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .market-slider-label span {
+            font-size: 0.85rem;
+            color: #b0bec5;
+        }
+        .market-slider-label .market-value {
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        .market-value.bear {
+            background: rgba(255, 82, 82, 0.2);
+            color: #ff5252;
+        }
+        .market-value.neutral {
+            background: rgba(255, 183, 77, 0.2);
+            color: #ffb74d;
+        }
+        .market-value.bull {
+            background: rgba(129, 199, 132, 0.2);
+            color: #81c784;
+        }
+        .market-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(to right, #ff5252 0%, #ffb74d 50%, #81c784 100%);
+            outline: none;
+            cursor: pointer;
+        }
+        .market-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            border: 2px solid #4fc3f7;
+        }
+        .market-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            border: 2px solid #4fc3f7;
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.7rem;
+            color: #78909c;
+        }
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            height: 300px;
+        }
+        .chart-container h3 {
+            color: #4fc3f7;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: calc(100% - 30px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Investment & Pledging Calculator</h1>
+        <p class="subtitle">Portfolio Allocation with Margin Trading Strategy</p>
+
+        <div class="grid">
+            <!-- Capital Input with Total Return -->
+            <div class="card">
+                <h2>Capital Input</h2>
+                <div class="input-group">
+                    <label for="capital">Total Investment Capital (₹)</label>
+                    <input type="number" id="capital" value="1000000" onchange="calculate()">
+                    <div class="hint">Enter your total capital to invest</div>
+                </div>
+                <div class="hero-return">
+                    <div class="label">Total Portfolio Return (Annual)</div>
+                    <div class="amount" id="heroReturnAmount">₹2,17,750</div>
+                    <div class="cagr">Effective CAGR: <span id="heroCAGR">21.78%</span></div>
+                    <div class="sub-info">
+                        <span>Margin: ₹<span id="heroMargin">8,65,000</span></span>
+                        <span>Year 5: ₹<span id="heroYear5">26,77,024</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Allocation Settings -->
+            <div class="card">
+                <h2>Portfolio Allocation (%)</h2>
+                <div class="presets-container">
+                    <span class="presets-label">Quick Presets:</span>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" onclick="applyPreset('fullCash')" data-tooltip="No pledging required. 100% cash margin for trading. Simple but no asset appreciation.">Full Cash</button>
+                        <button class="preset-btn" onclick="applyPreset('maxBonds')" data-tooltip="Bond-heavy, low volatility. Stable returns with minimal equity risk. Good for risk-averse traders.">Max Bonds</button>
+                        <button class="preset-btn" onclick="applyPreset('conservative')" data-tooltip="Lower risk profile. More bonds than equity. Suitable for beginners or volatile markets.">Conservative</button>
+                        <button class="preset-btn active" onclick="applyPreset('balanced')" data-tooltip="Recommended default. Balanced mix of growth and stability. Good risk-reward ratio.">Balanced</button>
+                        <button class="preset-btn" onclick="applyPreset('aggressive')" data-tooltip="Higher equity exposure. More growth potential but increased volatility. For experienced traders.">Aggressive</button>
+                        <button class="preset-btn warning-preset" onclick="applyPreset('fullEquity')" data-tooltip="Maximum equity allocation. Broker may charge interest (~12-18% p.a.) for cash component shortfall. Higher risk.">Full Equity</button>
+                    </div>
+                </div>
+                <div class="inline-inputs">
+                    <div class="input-group">
+                        <label for="niftyAlloc">Nifty/Indices</label>
+                        <input type="number" id="niftyAlloc" value="50" onchange="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label for="bondAlloc">Bonds</label>
+                        <input type="number" id="bondAlloc" value="40" onchange="calculate()">
+                    </div>
+                </div>
+                <div class="inline-inputs">
+                    <div class="input-group">
+                        <label for="cashAlloc">Cash</label>
+                        <input type="number" id="cashAlloc" value="10" onchange="calculate()">
+                    </div>
+                    <div class="input-group">
+                        <label>Total Allocation</label>
+                        <input type="text" id="totalAlloc" value="100%" disabled style="background: rgba(129, 199, 132, 0.2);">
+                    </div>
+                </div>
+
+                <!-- Market Condition Sliders -->
+                <div class="market-slider-container" style="margin-top: 15px;">
+                    <div class="market-slider-label">
+                        <span>Equity Market Outlook</span>
+                        <span class="market-value neutral" id="equityMarketLabel">Neutral</span>
+                    </div>
+                    <input type="range" class="market-slider" id="equityMarketSlider" min="-50" max="50" value="0" oninput="updateMarketCondition('equity')">
+                    <div class="slider-labels">
+                        <span>Bear (-50%)</span>
+                        <span>Neutral</span>
+                        <span>Bull (+50%)</span>
+                    </div>
+                </div>
+
+                <div class="market-slider-container">
+                    <div class="market-slider-label">
+                        <span>Trading Performance</span>
+                        <span class="market-value neutral" id="tradingMarketLabel">Neutral</span>
+                    </div>
+                    <input type="range" class="market-slider" id="tradingMarketSlider" min="-50" max="50" value="0" oninput="updateMarketCondition('trading')">
+                    <div class="slider-labels">
+                        <span>Poor (-50%)</span>
+                        <span>Average</span>
+                        <span>Excellent (+50%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Return Assumptions -->
+            <div class="card">
+                <h2>Expected Returns (CAGR %)</h2>
+                <div class="inline-inputs">
+                    <div class="input-group">
+                        <label for="niftyReturn">Nifty CAGR</label>
+                        <input type="number" id="niftyReturn" value="12" step="0.5" onchange="calculate()">
+                        <div class="hint">Base: 12% | Adjusted by market outlook</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="bondReturn">Bond Return</label>
+                        <input type="number" id="bondReturn" value="6.5" step="0.5" onchange="calculate()">
+                        <div class="hint">Govt bonds ~6.5-7%</div>
+                    </div>
+                </div>
+                <div class="inline-inputs">
+                    <div class="input-group">
+                        <label for="tradingReturn">Trading Return on Margin</label>
+                        <input type="number" id="tradingReturn" value="15" step="0.5" onchange="calculate()">
+                        <div class="hint">Base: 15% | Adjusted by performance</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="profitShare">Trading Company Profit Share (%)</label>
+                        <input type="number" id="profitShare" value="10" step="1" onchange="calculate()">
+                        <div class="hint">% of trading profits paid to advisor</div>
+                    </div>
+                </div>
+                <div class="inline-inputs">
+                    <div class="input-group">
+                        <label for="liquidBeesAlloc">Cash in Liquid Funds (%)</label>
+                        <input type="number" id="liquidBeesAlloc" value="80" step="5" onchange="calculate()">
+                        <div class="hint">% of cash invested in Liquid Funds (no haircut, counts as cash)</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="liquidBeesReturn">Liquid Funds Return (%)</label>
+                        <input type="number" id="liquidBeesReturn" value="4" step="0.5" onchange="calculate()">
+                        <div class="hint">Liquid Fund return ~4-5% (LiquidBees 5Y avg: 4.6%)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pledging Settings -->
+            <div class="card">
+                <h2>Pledging & Margin Settings</h2>
+                <div class="inline-inputs">
+                    <div class="input-group">
+                        <label for="niftyHaircut">Nifty Haircut (%)</label>
+                        <input type="number" id="niftyHaircut" value="10" onchange="calculate()">
+                        <div class="hint">Margin received: 90%</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="bondHaircut">Bond Haircut (%)</label>
+                        <input type="number" id="bondHaircut" value="15" onchange="calculate()">
+                        <div class="hint">Margin received: 85%</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="overallMargin">Overall Margin Received (%)</label>
+                    <input type="number" id="overallMargin" value="85" onchange="calculate()">
+                    <div class="hint">Approx margin received from broker on pledged portfolio</div>
+                </div>
+                <div class="inline-inputs">
+                    <div class="input-group">
+                        <label for="minCashRequired">Min Cash Required (%)</label>
+                        <input type="number" id="minCashRequired" value="50" onchange="calculate()">
+                        <div class="hint">Broker's cash component requirement</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="brokerInterest">Broker Interest Rate (%)</label>
+                        <input type="number" id="brokerInterest" value="12" step="0.5" onchange="calculate()">
+                        <div class="hint">Interest on cash shortfall (~12-18%)</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="overnightPct">Overnight Position (%)</label>
+                    <input type="number" id="overnightPct" value="40" step="5" onchange="calculate()">
+                    <div class="hint">% of margin used for overnight positions (interest applies only to this)</div>
+                </div>
+            </div>
+
+            <!-- Portfolio Breakdown -->
+            <div class="card">
+                <h2>Portfolio Allocation Breakdown</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Allocation</th>
+                            <th>Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Nifty/Indices</td>
+                            <td class="percentage" id="niftyAllocDisplay">50%</td>
+                            <td class="value" id="niftyAmount">5,00,000</td>
+                        </tr>
+                        <tr>
+                            <td>Bonds</td>
+                            <td class="percentage" id="bondAllocDisplay">40%</td>
+                            <td class="value" id="bondAmount">4,00,000</td>
+                        </tr>
+                        <tr>
+                            <td>Cash</td>
+                            <td class="percentage" id="cashAllocDisplay">10%</td>
+                            <td class="value" id="cashAmount">1,00,000</td>
+                        </tr>
+                        <tr class="summary-row">
+                            <td>Total Portfolio</td>
+                            <td>100%</td>
+                            <td id="totalPortfolio">10,00,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pledging & Margin -->
+            <div class="card">
+                <h2>Pledging & Trading Margin</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pledgeable Assets (Nifty + Bonds)</td>
+                            <td class="value" id="pledgeableAssets">9,00,000</td>
+                        </tr>
+                        <tr>
+                            <td>Margin Received (<span id="marginPercent">85</span>%)</td>
+                            <td class="value highlight" id="marginReceived">7,65,000</td>
+                        </tr>
+                        <tr>
+                            <td>Cash Available for Margin</td>
+                            <td class="value" id="cashForMargin">1,00,000</td>
+                        </tr>
+                        <tr class="summary-row">
+                            <td>Total Trading Margin</td>
+                            <td id="totalMargin">8,65,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Annual Returns -->
+            <div class="card">
+                <h2>Expected Annual Returns</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Rate</th>
+                            <th>Return (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Nifty Appreciation</td>
+                            <td class="percentage" id="niftyRateDisplay">12%</td>
+                            <td class="value" id="niftyReturnAmt">60,000</td>
+                        </tr>
+                        <tr>
+                            <td>Bond Interest</td>
+                            <td class="percentage" id="bondRateDisplay">7%</td>
+                            <td class="value" id="bondReturnAmt">28,000</td>
+                        </tr>
+                        <tr>
+                            <td>Liquid Funds Returns</td>
+                            <td class="percentage" id="liquidBeesRateDisplay">4%</td>
+                            <td class="value" id="liquidBeesReturnAmt">0</td>
+                        </tr>
+                        <tr>
+                            <td>Trading Profits (on Margin)</td>
+                            <td class="percentage" id="tradingRateDisplay">15%</td>
+                            <td class="value highlight" id="tradingReturnAmt">1,29,750</td>
+                        </tr>
+                        <tr id="profitShareRow">
+                            <td>Trading Company Share</td>
+                            <td class="percentage" id="profitShareDisplay">10%</td>
+                            <td class="value" style="color: #ff9800;" id="profitShareAmt">0</td>
+                        </tr>
+                        <tr id="brokerInterestRow" style="display: none;">
+                            <td>Broker Interest Cost</td>
+                            <td class="percentage" id="brokerInterestRateDisplay">15%</td>
+                            <td class="value" style="color: #ff5252;" id="brokerInterestCost">0</td>
+                        </tr>
+                        <tr class="summary-row">
+                            <td colspan="2">Total Annual Returns</td>
+                            <td id="totalReturns">2,17,750</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 5 Year Projection -->
+            <div class="card">
+                <h2>5-Year Growth Projection</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Portfolio Value</th>
+                            <th>Annual Return</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectionTable">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="card charts-section">
+                <h2>Visual Analytics</h2>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Portfolio Allocation</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="allocationChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Returns Breakdown</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="returnsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>5-Year Portfolio Growth</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Capital vs Margin Utilization</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="marginChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="card notes-card">
+                <h2>Important Notes & Assumptions</h2>
+                <ul>
+                    <li><strong>Nifty 50 Historical CAGR:</strong> ~12-14% over long term (2000-2024). Conservative estimate: 12%</li>
+                    <li><strong>Government Bonds:</strong> Current 10-year G-Sec yields around 7-7.5%. Corporate bonds may offer 8-9%</li>
+                    <li><strong>Pledging Haircut:</strong> Brokers typically provide 85-90% margin on approved securities. Nifty stocks get ~10% haircut, bonds ~15%</li>
+                    <li><strong>Trading Returns:</strong> 15% return on margin is achievable with systematic strategies but involves significant risk</li>
+                    <li><strong>Cash Component:</strong> Kept liquid for emergency margin calls and opportunities</li>
+                    <li><strong>Tax Implications:</strong> Returns shown are pre-tax. LTCG, STCG, and interest income will be taxed differently</li>
+                    <li><strong>Risk Warning:</strong> Trading on margin amplifies both gains and losses. Past returns don't guarantee future performance</li>
+                    <li><strong>Rebalancing:</strong> Portfolio should be rebalanced annually to maintain target allocation</li>
+                </ul>
+                <div class="warning">
+                    <strong>Disclaimer:</strong> This calculator is for educational purposes only. Actual returns may vary significantly.
+                    Trading involves substantial risk of loss. Consult a SEBI registered investment advisor before making investment decisions.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Chart instances
+        let allocationChart, returnsChart, growthChart, marginChart;
+
+        function formatCurrency(num) {
+            return num.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        }
+
+        // Preset configurations
+        const presets = {
+            fullCash: { nifty: 0, bonds: 0, cash: 100, name: 'Full Cash' },
+            maxBonds: { nifty: 10, bonds: 80, cash: 10, name: 'Max Bonds' },
+            conservative: { nifty: 30, bonds: 60, cash: 10, name: 'Conservative' },
+            balanced: { nifty: 50, bonds: 40, cash: 10, name: 'Balanced' },
+            aggressive: { nifty: 70, bonds: 20, cash: 10, name: 'Aggressive' },
+            fullEquity: { nifty: 90, bonds: 0, cash: 10, name: 'Full Equity' }
+        };
+
+        // Base return values
+        const baseReturns = {
+            nifty: 12,
+            trading: 15
+        };
+
+        function applyPreset(presetKey) {
+            const preset = presets[presetKey];
+            if (!preset) return;
+
+            // Update input values
+            document.getElementById('niftyAlloc').value = preset.nifty;
+            document.getElementById('bondAlloc').value = preset.bonds;
+            document.getElementById('cashAlloc').value = preset.cash;
+
+            // Update active button state
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Recalculate
+            calculate();
+        }
+
+        function updateMarketCondition(type) {
+            if (type === 'equity') {
+                const slider = document.getElementById('equityMarketSlider');
+                const label = document.getElementById('equityMarketLabel');
+                const value = parseInt(slider.value);
+
+                // Update label
+                let labelText, labelClass;
+                if (value < -20) {
+                    labelText = `Bear (${value}%)`;
+                    labelClass = 'bear';
+                } else if (value > 20) {
+                    labelText = `Bull (+${value}%)`;
+                    labelClass = 'bull';
+                } else {
+                    labelText = value === 0 ? 'Neutral' : `${value > 0 ? '+' : ''}${value}%`;
+                    labelClass = 'neutral';
+                }
+                label.textContent = labelText;
+                label.className = 'market-value ' + labelClass;
+
+                // Adjust Nifty return
+                const adjustedNifty = baseReturns.nifty * (1 + value / 100);
+                document.getElementById('niftyReturn').value = adjustedNifty.toFixed(1);
+
+            } else if (type === 'trading') {
+                const slider = document.getElementById('tradingMarketSlider');
+                const label = document.getElementById('tradingMarketLabel');
+                const value = parseInt(slider.value);
+
+                // Update label
+                let labelText, labelClass;
+                if (value < -20) {
+                    labelText = `Poor (${value}%)`;
+                    labelClass = 'bear';
+                } else if (value > 20) {
+                    labelText = `Excellent (+${value}%)`;
+                    labelClass = 'bull';
+                } else {
+                    labelText = value === 0 ? 'Average' : `${value > 0 ? '+' : ''}${value}%`;
+                    labelClass = 'neutral';
+                }
+                label.textContent = labelText;
+                label.className = 'market-value ' + labelClass;
+
+                // Adjust Trading return
+                const adjustedTrading = baseReturns.trading * (1 + value / 100);
+                document.getElementById('tradingReturn').value = adjustedTrading.toFixed(1);
+            }
+
+            calculate();
+        }
+
+        function initCharts() {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#b0bec5',
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            };
+
+            // Allocation Pie Chart
+            const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+            allocationChart = new Chart(allocationCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Nifty/Indices', 'Bonds', 'Cash'],
+                    datasets: [{
+                        data: [50, 40, 10],
+                        backgroundColor: ['#4fc3f7', '#81c784', '#ffb74d'],
+                        borderColor: ['#4fc3f7', '#81c784', '#ffb74d'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    cutout: '60%',
+                    plugins: {
+                        ...chartOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Returns Bar Chart
+            const returnsCtx = document.getElementById('returnsChart').getContext('2d');
+            returnsChart = new Chart(returnsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Nifty', 'Bonds', 'Cash', 'Trading'],
+                    datasets: [{
+                        label: 'Annual Returns (₹)',
+                        data: [60000, 28000, 0, 129750],
+                        backgroundColor: ['#4fc3f7', '#81c784', '#ffb74d', '#f48fb1'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#90a4ae' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#90a4ae' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Growth Line Chart
+            const growthCtx = document.getElementById('growthChart').getContext('2d');
+            growthChart = new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Start', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    datasets: [{
+                        label: 'Portfolio Value (₹)',
+                        data: [1000000, 1217750, 1483147, 1806427, 2200246, 2680037],
+                        borderColor: '#4fc3f7',
+                        backgroundColor: 'rgba(79, 195, 247, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#4fc3f7',
+                        pointBorderColor: '#fff',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                color: '#90a4ae',
+                                callback: function(value) {
+                                    return '₹' + (value/100000).toFixed(1) + 'L';
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#90a4ae' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Margin Utilization Chart
+            const marginCtx = document.getElementById('marginChart').getContext('2d');
+            marginChart = new Chart(marginCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Capital Flow'],
+                    datasets: [
+                        {
+                            label: 'Original Capital',
+                            data: [1000000],
+                            backgroundColor: '#4fc3f7',
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Pledged Margin',
+                            data: [765000],
+                            backgroundColor: '#81c784',
+                            borderRadius: 8
+                        },
+                        {
+                            label: 'Cash Margin',
+                            data: [100000],
+                            backgroundColor: '#ffb74d',
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            stacked: false,
+                            ticks: {
+                                color: '#90a4ae',
+                                callback: function(value) {
+                                    return '₹' + (value/100000).toFixed(1) + 'L';
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            stacked: false,
+                            ticks: { color: '#90a4ae' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts(data) {
+            // Update Allocation Chart
+            allocationChart.data.datasets[0].data = [data.niftyAlloc, data.bondAlloc, data.cashAlloc];
+            allocationChart.update();
+
+            // Update Returns Chart
+            returnsChart.data.datasets[0].data = [
+                data.niftyReturnAmt,
+                data.bondReturnAmt,
+                data.cashReturnAmt,
+                data.tradingReturnAmt
+            ];
+            returnsChart.update();
+
+            // Update Growth Chart
+            growthChart.data.datasets[0].data = data.growthData;
+            growthChart.update();
+
+            // Update Margin Chart
+            marginChart.data.datasets[0].data = [data.capital];
+            marginChart.data.datasets[1].data = [data.marginReceived];
+            marginChart.data.datasets[2].data = [data.cashAmount];
+            marginChart.update();
+        }
+
+        function calculate() {
+            // Get inputs
+            const capital = parseFloat(document.getElementById('capital').value) || 0;
+            const niftyAlloc = parseFloat(document.getElementById('niftyAlloc').value) || 0;
+            const bondAlloc = parseFloat(document.getElementById('bondAlloc').value) || 0;
+            const cashAlloc = parseFloat(document.getElementById('cashAlloc').value) || 0;
+
+            const niftyReturn = parseFloat(document.getElementById('niftyReturn').value) || 0;
+            const bondReturn = parseFloat(document.getElementById('bondReturn').value) || 0;
+            const tradingReturn = parseFloat(document.getElementById('tradingReturn').value) || 0;
+            const profitShare = parseFloat(document.getElementById('profitShare').value) || 0;
+            const liquidBeesAlloc = parseFloat(document.getElementById('liquidBeesAlloc').value) || 0;
+            const liquidBeesReturn = parseFloat(document.getElementById('liquidBeesReturn').value) || 0;
+
+            const overallMargin = parseFloat(document.getElementById('overallMargin').value) || 0;
+            const minCashRequired = parseFloat(document.getElementById('minCashRequired').value) || 0;
+            const brokerInterestRate = parseFloat(document.getElementById('brokerInterest').value) || 0;
+            const overnightPct = parseFloat(document.getElementById('overnightPct').value) || 0;
+
+            // Check allocation total
+            const totalAllocVal = niftyAlloc + bondAlloc + cashAlloc;
+            document.getElementById('totalAlloc').value = totalAllocVal + '%';
+            document.getElementById('totalAlloc').style.background =
+                totalAllocVal === 100 ? 'rgba(129, 199, 132, 0.2)' : 'rgba(255, 82, 82, 0.2)';
+
+            // Calculate allocations
+            const niftyAmount = capital * (niftyAlloc / 100);
+            const bondAmount = capital * (bondAlloc / 100);
+            const cashAmount = capital * (cashAlloc / 100);
+
+            // Update allocation display
+            document.getElementById('niftyAllocDisplay').textContent = niftyAlloc + '%';
+            document.getElementById('bondAllocDisplay').textContent = bondAlloc + '%';
+            document.getElementById('cashAllocDisplay').textContent = cashAlloc + '%';
+            document.getElementById('niftyAmount').textContent = formatCurrency(niftyAmount);
+            document.getElementById('bondAmount').textContent = formatCurrency(bondAmount);
+            document.getElementById('cashAmount').textContent = formatCurrency(cashAmount);
+            document.getElementById('totalPortfolio').textContent = formatCurrency(capital);
+
+            // Calculate Liquid Funds allocation from cash
+            // Liquid Funds are treated as full cash (no haircut, no broker interest)
+            const liquidBeesAmount = cashAmount * (liquidBeesAlloc / 100);
+            const pureCashAmount = cashAmount - liquidBeesAmount;
+
+            // Calculate pledging & margin
+            // Liquid Funds has no haircut, so full amount is available as margin
+            const pledgeableAssets = niftyAmount + bondAmount;
+            const marginReceived = pledgeableAssets * (overallMargin / 100);
+            // Total margin = pledged margin + Liquid Funds (no haircut) + pure cash
+            const totalTradingMargin = marginReceived + liquidBeesAmount + pureCashAmount;
+
+            document.getElementById('pledgeableAssets').textContent = formatCurrency(pledgeableAssets);
+            document.getElementById('marginPercent').textContent = overallMargin;
+            document.getElementById('marginReceived').textContent = formatCurrency(marginReceived);
+            document.getElementById('cashForMargin').textContent = formatCurrency(cashAmount);
+            document.getElementById('totalMargin').textContent = formatCurrency(totalTradingMargin);
+
+            // Calculate returns
+            const niftyReturnAmt = niftyAmount * (niftyReturn / 100);
+            const bondReturnAmt = bondAmount * (bondReturn / 100);
+            // Liquid Funds earns returns on the invested amount
+            const liquidBeesReturnAmt = liquidBeesAmount * (liquidBeesReturn / 100);
+            // Trading returns are calculated on total trading margin (pledged margin + Liquid Funds + cash)
+            const grossTradingReturn = totalTradingMargin * (tradingReturn / 100);
+            // Trading company takes their share of profits
+            const profitShareAmt = grossTradingReturn * (profitShare / 100);
+            const tradingReturnAmt = grossTradingReturn - profitShareAmt;
+
+            // Update profit share display
+            document.getElementById('profitShareDisplay').textContent = profitShare + '%';
+            document.getElementById('profitShareAmt').textContent = '-' + formatCurrency(profitShareAmt);
+
+            // Calculate broker interest cost if cash is below minimum required
+            // Bonds and Liquid Funds count as cash component for margin requirements
+            // Liquid Funds are treated as full cash - no broker interest charges
+            // Interest only applies to overnight positions (overnightPct%)
+            const cashRequiredForMargin = totalTradingMargin * (minCashRequired / 100);
+            // Liquid Funds count as full cash (like pure cash), so they fully satisfy cash requirements
+            const cashComponentAvailable = pureCashAmount + liquidBeesAmount + bondAmount; // Pure cash + Liquid Funds + Bonds count as cash equivalent
+            const cashShortfall = Math.max(0, cashRequiredForMargin - cashComponentAvailable);
+            // Interest is only charged on overnight positions portion of the shortfall
+            const overnightShortfall = cashShortfall * (overnightPct / 100);
+            const brokerInterestCost = overnightShortfall * (brokerInterestRate / 100);
+
+            // Show/hide broker interest row
+            const brokerInterestRow = document.getElementById('brokerInterestRow');
+            if (cashShortfall > 0) {
+                brokerInterestRow.style.display = '';
+                document.getElementById('brokerInterestRateDisplay').textContent = brokerInterestRate + '%';
+                document.getElementById('brokerInterestCost').textContent = '-' + formatCurrency(brokerInterestCost);
+            } else {
+                brokerInterestRow.style.display = 'none';
+            }
+
+            const totalReturns = niftyReturnAmt + bondReturnAmt + liquidBeesReturnAmt + tradingReturnAmt - brokerInterestCost;
+            const effectiveCAGR = (totalReturns / capital) * 100;
+
+            document.getElementById('niftyRateDisplay').textContent = niftyReturn + '%';
+            document.getElementById('bondRateDisplay').textContent = bondReturn + '%';
+            document.getElementById('liquidBeesRateDisplay').textContent = liquidBeesReturn + '%';
+            document.getElementById('tradingRateDisplay').textContent = tradingReturn + '%';
+
+            document.getElementById('niftyReturnAmt').textContent = formatCurrency(niftyReturnAmt);
+            document.getElementById('bondReturnAmt').textContent = formatCurrency(bondReturnAmt);
+            document.getElementById('liquidBeesReturnAmt').textContent = formatCurrency(liquidBeesReturnAmt);
+            document.getElementById('tradingReturnAmt').textContent = formatCurrency(grossTradingReturn);
+            document.getElementById('totalReturns').textContent = formatCurrency(totalReturns);
+
+            // Update Hero Return Display
+            document.getElementById('heroReturnAmount').textContent = '₹' + formatCurrency(totalReturns);
+            document.getElementById('heroCAGR').textContent = effectiveCAGR.toFixed(2) + '%';
+            document.getElementById('heroMargin').textContent = formatCurrency(totalTradingMargin);
+
+            // 5-Year Projection
+            let projectionHTML = '';
+            let portfolioValue = capital;
+            let growthData = [capital];
+            let year5Value = capital;
+
+            for (let year = 1; year <= 5; year++) {
+                const annualReturn = portfolioValue * (effectiveCAGR / 100);
+                portfolioValue += annualReturn;
+                growthData.push(Math.round(portfolioValue));
+                if (year === 5) year5Value = portfolioValue;
+                projectionHTML += `
+                    <tr>
+                        <td>Year ${year}</td>
+                        <td class="value">₹${formatCurrency(portfolioValue)}</td>
+                        <td class="percentage">+₹${formatCurrency(annualReturn)}</td>
+                    </tr>
+                `;
+            }
+            document.getElementById('projectionTable').innerHTML = projectionHTML;
+            document.getElementById('heroYear5').textContent = formatCurrency(year5Value);
+
+            // Update Charts
+            if (allocationChart) {
+                updateCharts({
+                    capital,
+                    niftyAlloc,
+                    bondAlloc,
+                    cashAlloc,
+                    niftyReturnAmt,
+                    bondReturnAmt,
+                    cashReturnAmt,
+                    tradingReturnAmt,
+                    growthData,
+                    marginReceived,
+                    cashAmount
+                });
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            calculate();
+        });
+    </script>
+</body>
+</html>
